@@ -39,8 +39,14 @@ const account5 = {
   interestRate: 2,
   pin: 5555,
 };
+const account6 = {
+  owner: 'Sayyad Haris',
+  movements: [200, 450, -400, 3000, -650, -130, 70, 1300, 249387437],
+  interestRate: 1.2, // %
+  pin: 1111,
+};
 
-const accounts = [account1, account2, account3, account4, account5];
+const accounts = [account1, account2, account3, account4, account5, account6];
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
