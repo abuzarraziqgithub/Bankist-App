@@ -184,7 +184,7 @@ btnLogin.addEventListener('click', function (e) {
   console.log(currentAccount);
 
   // If the pin of the given account is equal to the pin of the user input:
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and message
     // The text content of the given account which includes the first word and welcome text.
     labelWelcome.textContent = `Welcome back, ${
@@ -210,7 +210,7 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
 
   // Find the username of the given account , where the username is equal to the tranfer input username.
   const receiveAcc = accounts.find(
@@ -240,7 +240,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   // Any deposite should be greater than 10% of their request.
   // If at least one element in the movement array has the condition applied , than it will be true.
@@ -263,7 +263,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
