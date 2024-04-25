@@ -91,7 +91,7 @@ const displayMovements = function (movements, sort = false) {
         <div class="movements__type movements__type--${type}">
             ${i + 1} ${type}
         </div>
-        <div class="movements__value">${mov} PKR</div>
+        <div class="movements__value">${mov.toFixed(2)} PKR</div>
    </div>
     `;
 
@@ -112,7 +112,7 @@ btnSort.addEventListener('click', function (e) {
 // Lecture 10 : Reduce Method (Manipulating current balance)
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance} PKR`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)} PKR`;
 };
 // calcDisplayBalance(account1.movements);
 
@@ -124,13 +124,13 @@ const calcDisplaySummary = function (acc) {
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
 
-  labelSumIn.textContent = `${income} PKR `;
+  labelSumIn.textContent = `${income.toFixed(2)} PKR `;
 
   // For Withdrawal (out)
   const withdrawal = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov);
-  labelSumOut.textContent = `${Math.abs(withdrawal)} PKR`;
+  labelSumOut.textContent = `${Math.abs(withdrawal).toFixed(2)} PKR`;
 
   // Interest
   // we used map method , to do some operation.
@@ -138,7 +138,7 @@ const calcDisplaySummary = function (acc) {
     .filter(mov => mov > 0)
     .map(deposite => (deposite * acc.interestRate) / 100)
     .reduce((acc, map) => acc + map, 0);
-  labelSumInterest.textContent = `${interest} PKR`;
+  labelSumInterest.textContent = `${interest.toFixed(2)} PKR`;
 };
 // calcDisplaySummary(account1.movements);
 // calcDisplaySummary(account2.mosvements);
