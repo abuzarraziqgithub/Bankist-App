@@ -319,3 +319,17 @@ const flatMapMethod = accounts
   .flatMap(acc => acc.movements)
   .reduce((acc, mov) => acc + mov);
 console.log(flatMapMethod);
+
+// SECTION 12 CODE:
+
+// USING REMAINDER OPERATOR TO CHANGE THE BACKGROUND COLOR OF EACH EVEN OR %3 ROW.
+labelBalance.addEventListener('click', () => {
+  [...document.querySelectorAll('.movements__row')].forEach((row, i) => {
+    if (i % 2 === 0) {
+      row.style.backgroundColor = 'green';
+    }
+    if (i % 3 === 0) {
+      row.style.backgroundColor = 'yellow';
+    }
+  });
+});
