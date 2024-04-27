@@ -10,6 +10,18 @@ const account1 = {
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+  movementsDates: [
+    '2019-11-18T21:31:17.178Z',
+    '2019-12-23T07:42:02.383Z',
+    '2020-01-28T09:15:04.904Z',
+    '2020-04-01T10:17:24.185Z',
+    '2020-05-08T14:11:59.604Z',
+    '2020-05-27T17:01:17.194Z',
+    '2020-07-11T23:36:17.929Z',
+    '2020-07-12T10:51:36.790Z',
+  ],
+  currency: 'EUR',
+  locale: 'pt-PT', // de-DE
 };
 
 const account2 = {
@@ -38,15 +50,21 @@ const account5 = {
   movements: [44322, 5000, 7020, 5000, 9000000, 3444, 3222, 422],
   interestRate: 2,
   pin: 5555,
-};
-const account6 = {
-  owner: 'Sayyad Haris',
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300, 249387437],
-  interestRate: 1.2, // %
-  pin: 6666,
+  movementsDates: [
+    '2019-11-01T13:15:33.035Z',
+    '2019-11-30T09:48:16.867Z',
+    '2019-12-25T06:04:23.907Z',
+    '2020-01-25T14:18:46.235Z',
+    '2020-02-05T16:33:06.386Z',
+    '2020-04-10T14:43:26.374Z',
+    '2020-06-25T18:49:59.371Z',
+    '2020-07-26T12:01:20.894Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
-const accounts = [account1, account2, account3, account4, account5, account6];
+const accounts = [account1, account2, account3, account4, account5];
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -75,22 +93,31 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // Lecture 5 :
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
   // CREATE A VARIABLE FOR SORTING THE MOVEMENTS:
   //  WE TAKE THE SLICE METHOD HERE BEACUSE WE DON'T WANT TO MUTATE THE ORIGINAL ARRAY.WE WANT TO MAKE A COPY OF IT.
-  const movs = movements.slice().sort((a, b) => (sort ? a - b : movements)); // SORTING FROM ASCENDING , BUT WE STARTED FROM THE BOTTOM , FOR US IT WILL BE DESCENDING.
+  const movs = acc.movements
+    .slice()
+    .sort((a, b) => (sort ? a - b : acc.movements)); // SORTING FROM ASCENDING , BUT WE STARTED FROM THE BOTTOM , FOR US IT WILL BE DESCENDING.
   // LET'S CREATE AN EVENT LISTENER FOR OUR SORT BUTTON.
 
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
+    const date = new Date(acc.movementsDates[i]);
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+
+    const year = date.getFullYear();
+    const displayDate = `${day}/${month}/${year}`;
     const html = `
     <div class="movements__row">
         <div class="movements__type movements__type--${type}">
             ${i + 1} ${type}
         </div>
+        <div class="movements__date">${displayDate}</div>
         <div class="movements__value">${mov.toFixed(2)} PKR</div>
    </div>
     `;
@@ -160,7 +187,6 @@ createUserNames(accounts);
 //  we simply looped over the accounts array , and in each iteration we manipulated the current account object and added a username to it based on the account owner plus all the transformations
 
 // Lecture - 13 : Implementing Login:
-
 let currentAccount;
 
 const updateUi = function (acc) {
@@ -173,6 +199,21 @@ const updateUi = function (acc) {
   // Display summary
   calcDisplaySummary(acc);
 };
+
+// THI S PART IS FAKE LOGIN
+currentAccount = account1;
+updateUi(currentAccount);
+containerApp.style.opacity = 100;
+
+// UPDATING DATE BELOW THE CURRENT BALANCE
+const now = new Date();
+const day = `${now.getDate()}`.padStart(2, 0);
+const month = `${now.getMonth()}`.padStart(2, 0);
+const year = now.getFullYear();
+const hour = now.getHours();
+const min = now.getMinutes();
+// UPDATING THE TEXT CONTENT OF THE LABEL DATE:
+labelDate.textContent = `${day}/${month}/${year} . ${hour}:${min}`;
 
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault(); // It will prevent the default refresh of the form.
@@ -323,13 +364,13 @@ console.log(flatMapMethod);
 // SECTION 12 CODE:
 
 // USING REMAINDER OPERATOR TO CHANGE THE BACKGROUND COLOR OF EACH EVEN OR %3 ROW.
-labelBalance.addEventListener('click', () => {
-  [...document.querySelectorAll('.movements__row')].forEach((row, i) => {
-    if (i % 2 === 0) {
-      row.style.backgroundColor = 'green';
-    }
-    if (i % 3 === 0) {
-      row.style.backgroundColor = 'yellow';
-    }
-  });
-});
+// labelBalance.addEventListener('click', () => {
+//   [...document.querySelectorAll('.movements__row')].forEach((row, i) => {
+//     if (i % 2 === 0) {
+//       row.style.backgroundColor = 'green';
+//     }
+//     if (i % 3 === 0) {
+//       row.style.backgroundColor = 'yellow';
+//     }
+//   });
+// });
