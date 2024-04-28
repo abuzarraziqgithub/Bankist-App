@@ -80,7 +80,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 // Functions
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (movements, sort = true) {
   containerMovements.innerHTML = '';
 
   let movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
