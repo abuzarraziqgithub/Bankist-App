@@ -168,7 +168,7 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(' ')[0]
     }`;
-    containerApp.style.opacity = 100;
+    // containerApp.style.opacity = 100;
 
     // CREATE CURRENT DATE
     const now = new Date();
@@ -260,3 +260,24 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+
+// LECTURE : ADDING DATES TO BANKIST APP:
+
+// CREATE A FAKE LOGIN TO IGNORE THE LOGIN PAGE WHENEVER REFRESH THE PAGE.
+
+// FAKE LOGIN UI
+currentAccount = account1;
+updateUI(account1);
+containerApp.style.opacity = 100;
+
+// LET'S ALSO DISPLAY A DATE , BY CALLING DATE CONSTRUCTOR FUNCTION AND SET IT TO THE LABELDATE VARIABLE TEXT CONTENT.
+
+const now = new Date();
+
+const day = now.getDay();
+const month = now.getMonth();
+const year = now.getFullYear();
+const hour = now.getHours();
+const min = now.getMinutes();
+
+labelDate.textContent = `${day}/${month}/${year},${hour}:${min}`;
