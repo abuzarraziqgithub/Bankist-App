@@ -49,7 +49,26 @@ const account2 = {
   locale: 'en-US',
 };
 
-const accounts = [account1, account2];
+const account3 = {
+  owner: 'Abuzar RaziQ',
+  movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+  interestRate: 1.5,
+  pin: 3333,
+
+  movementsDates: [
+    '2019-11-01T13:15:33.035Z',
+    '2019-11-30T09:48:16.867Z',
+    '2019-12-25T06:04:23.907Z',
+    '2020-01-25T14:18:46.235Z',
+    '2020-02-05T16:33:06.386Z',
+    '2020-04-10T14:43:26.374Z',
+    '2020-06-25T18:49:59.371Z',
+    '2020-07-26T12:01:20.894Z',
+  ],
+  currency: 'GBP',
+  locale: 'en-GB',
+};
+const accounts = [account1, account2, account3];
 
 /////////////////////////////////////////////////
 // Elements
@@ -81,23 +100,32 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
-const fomatMovementDate = function (date) {
+const fomatMovementDate = function (date, locale) {
   // FUNCTION THAT CALCULATES THE DAY PASSED BETWEEN TWO GIVEN DATES
   const calcDayPassed = (date1, date2) =>
-    (Math.round(Math.abs(date2 - date1)) / 1000) * 60 * 60 * 24;
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
 
   const daysPassed = calcDayPassed(new Date(), date);
-  console.log(daysPassed);
 
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
 
-  const day = `${date.getDay()}`.padStart(2, 0);
-  const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  const year = date.getFullYear();
+  // const day = `${date.getDay()}`.padStart(2, 0);
+  // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  // const year = date.getFullYear();
 
-  return `${day}/${month}/${year}`;
+  // return `${day}/${month}/${year}`;
+
+  return new Intl.DateTimeFormat(locale).format(date);
+};
+
+// CREATED A FUNCTION FOR INTERNATIONALIZING CURRENCY:
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
 };
 
 const displayMovements = function (acc, sort = false) {
@@ -110,15 +138,17 @@ const displayMovements = function (acc, sort = false) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const date = new Date(acc.movementsDates[i]);
-    const displayDate = fomatMovementDate(date);
+    const displayDate = fomatMovementDate(date, acc.locale);
 
+    // INTERNATIONALIZING NUMBERS : formatCur() FUNCTION:
+    const formattedMov = formatCur(mov, acc.locale, acc.currency);
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
     <div class="movements__date">${displayDate}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__value">${formattedMov}</div>
       </div>
     `;
 
@@ -128,19 +158,19 @@ const displayMovements = function (acc, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = formatCur(Math.abs(out), acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -150,7 +180,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const createUsernames = function (accs) {
@@ -175,9 +205,51 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+// CREATED A FUNCTION FOR TIMER:
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    // IN EACH CALL , PRINT THE REMAINING TIME TO UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // WHEN 0 SECONDS , STOP TIMER AND LOG OUT USER
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = 0;
+    }
+    // DECREASE 1S
+    time--;
+  };
+  // SET TIME TO 120 SECS
+  let time = 120;
+  tick();
+  // CALL THE TIMER EVERY SECOND
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 ///////////////////////////////////////
 // Event handlers
-let currentAccount;
+let currentAccount, timer;
+
+// EXPERIMENTING API : INTERNATIONALIZATION OF DATES:
+// const nowDate = new Date();
+// // const options = {
+// //   hour: 'numeric',
+// //   minute: 'numeric',
+// //   second: 'numeric',
+// //   day: 'numeric',
+// //   month: 'long',
+// // };
+
+// // const locale = navigator.language;
+
+// // labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(
+// //   nowDate
+// // );
 
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
@@ -197,17 +269,27 @@ btnLogin.addEventListener('click', function (e) {
 
     // CREATE CURRENT DATE
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = `${now.getFullYear()}`.padStart(2, 0);
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const min = now.getMinutes();
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+    };
 
-    labelBalance.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
 
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    // LOGIN OUT TIMER FUNCTION:
+    // IF THERE IS CURRENT LOGIN START , AND YOU LOG INTO NEW ACCOUNT , THEN RESTART THE TIMER.
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
 
     // Update UI
     updateUI(currentAccount);
@@ -238,6 +320,12 @@ btnTransfer.addEventListener('click', function (e) {
 
     // Update UI
     updateUI(currentAccount);
+
+    // RESET TIMER : WHEN THE USER TRANSFER , IT SHOULD RESET THE TIMER:
+    // FIRST , CLEAR THE TIMER
+    clearInterval(timer);
+    // THEN START AGAIN:
+    timer = startLogOutTimer();
   }
 });
 
@@ -247,14 +335,24 @@ btnLoan.addEventListener('click', function (e) {
   const amount = +inputLoanAmount.value;
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // Add movement
-    currentAccount.movements.push(amount);
+    // ADDED FOR THE APPROVAL OF REQUESTING LOAN
+    // IT WILL RELAOD AFTER GIVEN SE TIME.
+    setTimeout(function () {
+      // Add movement
+      currentAccount.movements.push(amount);
 
-    // ADDING TRANSFER DATE
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // ADDING TRANSFER DATE
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
+
+      // RESET TIMER : WHEN THE USER GET LOAN , IT SHOULD RESET THE TIMER:
+      // FIRST , CLEAR THE TIMER
+      clearInterval(timer);
+      // THEN START AGAIN:
+      timer = startLogOutTimer();
+    }, 2500);
   }
   inputLoanAmount.value = '';
 });
@@ -297,14 +395,14 @@ btnSort.addEventListener('click', function (e) {
 
 // CREATE A FAKE LOGIN TO IGNORE THE LOGIN PAGE WHENEVER REFRESH THE PAGE.
 
-// FAKE LOGIN UI
-currentAccount = account1;
-updateUI(account1);
-containerApp.style.opacity = 100;
+// // FAKE LOGIN UI
+// currentAccount = account1;
+// updateUI(account1);
+// containerApp.style.opacity = 100;
 
 // LET'S ALSO DISPLAY A DATE , BY CALLING DATE CONSTRUCTOR FUNCTION AND SET IT TO THE LABELDATE VARIABLE TEXT CONTENT.
 
-const now = new Date();
+// const now = new Date();
 
 // MONTH IS ZERO BASED , ALSO WE NEED TO ADD 0 AT THE START OF THE MONTH AND DAY , IF THERE IS ONLY ONE INTEGER.
 // const day = `${now.getDay()}`.padStart(2, 0);
