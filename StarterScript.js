@@ -80,19 +80,28 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 // Functions
-const displayMovements = function (movements, sort = true) {
+const displayMovements = function (acc, sort = true) {
   containerMovements.innerHTML = '';
 
-  let movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
-
+  let movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements;
+  // SO WE ADDED THE ENTIRE ACCOUNT , AND ALSO CALLED THE MOVEMENTS OF EACH ACCOUNT AND STORED IT IN THE MOVS.
+  // WE ALSO NEED TO PASS IN THE ENTIRE ACCOUNT WHERE WE CALL THIS FUNCTION , WHICH IS THE DISPLAYUI FUNCTION
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(acc.movementsDates[i]);
+    const day = `${date.getDay()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+
+    const displayDate = `${day}/${month}/${year}`;
 
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
+    <div class="movements__date">${displayDate}</div>
         <div class="movements__value">${mov}€</div>
       </div>
     `;
@@ -141,7 +150,7 @@ createUsernames(accounts);
 
 const updateUI = function (acc) {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
 
   // Display balance
   calcDisplayBalance(acc);
@@ -168,14 +177,14 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(' ')[0]
     }`;
-    // containerApp.style.opacity = 100;
+    containerApp.style.opacity = 100;
 
     // CREATE CURRENT DATE
     const now = new Date();
     const day = `${now.getDate()}`.padStart(2, 0);
     const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hour = now.getHours();
+    const year = `${now.getFullYear()}`.padStart(2, 0);
+    const hour = `${now.getHours()}`.padStart(2, 0);
     const min = now.getMinutes();
 
     labelBalance.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
@@ -207,6 +216,10 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
 
+    // ADDING TRANSFER DATE
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     // Update UI
     updateUI(currentAccount);
   }
@@ -220,6 +233,9 @@ btnLoan.addEventListener('click', function (e) {
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
     currentAccount.movements.push(amount);
+
+    // ADDING TRANSFER DATE
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
@@ -274,10 +290,16 @@ containerApp.style.opacity = 100;
 
 const now = new Date();
 
-const day = now.getDay();
-const month = now.getMonth();
-const year = now.getFullYear();
-const hour = now.getHours();
-const min = now.getMinutes();
+// MONTH IS ZERO BASED , ALSO WE NEED TO ADD 0 AT THE START OF THE MONTH AND DAY , IF THERE IS ONLY ONE INTEGER.
+// const day = `${now.getDay()}`.padStart(2, 0);
+// const month = `${now.getMonth() + 1}`.padStart(2, 0);
+// const year = now.getFullYear();
+// const hour = now.getHours();
+// const min = now.getMinutes();
 
-labelDate.textContent = `${day}/${month}/${year},${hour}:${min}`;
+// labelDate.textContent = `${day}/${month}/${year},${hour}:${min}`;
+
+// LET'S ALSO IMPLEMENT DATES FOR MOVEMENTS.
+// WE PASSED IN THE ENTIRE ACCOUNT TO THE DISPLAYMOVEMENTS FUNCTION , IN ORDER TO ADD THE DATE MOVEMENTS AS WELL.
+
+// WE ADDED DATES TO MOVEMENTS , TO TRANSFERS AND LOGINS. ALSO ADDED AN HTML OF DATES IN MOVEMENTS FUNCTION.
