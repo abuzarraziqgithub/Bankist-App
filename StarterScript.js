@@ -12,7 +12,7 @@
 const account1 = {
   owner: 'Jonas Schmedtmann',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
-  interestRate: 1.2, // %
+  interestRate: 0.5, // %
   pin: 1111,
 
   movementsDates: [
@@ -25,14 +25,14 @@ const account1 = {
     '2024-05-28T23:36:17.929Z',
     '2024-05-01T10:51:36.790Z',
   ],
-  currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  currency: 'PKR',
+  locale: 'PST', // de-DE
 };
 
 const account2 = {
   owner: 'Jessica Davis',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
-  interestRate: 1.5,
+  interestRate: 1,
   pin: 2222,
 
   movementsDates: [
@@ -65,8 +65,8 @@ const account3 = {
     '2020-06-25T18:49:59.371Z',
     '2020-07-26T12:01:20.894Z',
   ],
-  currency: 'GBP',
-  locale: 'en-GB',
+  currency: 'PKR',
+  locale: 'PST',
 };
 const accounts = [account1, account2, account3];
 
